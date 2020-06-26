@@ -1,18 +1,32 @@
-SELECT a.cd_paciente, b.cd_atendimento, a.NM_paciente, d.ds_unid_int, c.ds_leito, e.ds_documento, f.dt_registro
-FROM paciente a,
-     atendime b,
-     leito c,
-     unid_int d,
-     documento e,
-     registro_documento f
-WHERE a.cd_paciente=b.cd_paciente
-AND b.cd_leito=c.cd_leito
-AND c.cd_unid_int=d.cd_unid_int
-AND b.cd_atendimento=f.cd_atendimento
-AND f.cd_documento=e.cd_documento
-AND B.CD_MULTI_EMPRESA=3
-AND e.cd_documento IN (810,775)
-and f.dt_registro between to_date ('01/08/2019','dd/mm/yyyy') and to_date ('30/11/2019','dd/mm/yyyy')
-ORDER BY d.ds_unid_int ASC;
+/*
+CREATED BY SAMIRA ALVES LUCIO DIAS
+DATE: 27/04/2020
+GOAL: Report developed to report when a new protocol report has been opened  and reported by nursing team
+*/
 
-select * from dbamv.vdic_paciente;
+SELECT 
+     paciente.cd_paciente
+    ,paciente.NM_paciente
+    ,atendime.cd_atendimento
+    ,leito.ds_leito
+    ,unid_int.ds_unid_int
+    ,documento.ds_documento
+    ,registro_documento.dt_registro
+
+FROM  paciente paciente
+         
+INNER JOIN atendime atendime
+ON atendime.cd_paciente = paciente.cd_paciente
+INNER JOIN leito leito
+ON leito.cd_leito = atendime.cd_leito
+INNER JOIN unid_int
+ON leito.cd_unid_int = unid_int.cd_unid_int
+INNER JOIN registro_documento registro_documento
+ON registro_documento.cd_atendimento = atendime.cd_atendimento
+INNER JOIN documento documento
+ON documento.cd_documento = registro_documento.cd_documento
+WHERE atendime.CD_MULTI_EMPRESA = '3'
+AND documento.cd_documento IN (810,775)
+and registro_documento.dt_registro between to_date ('01/08/2019','dd/mm/yyyy') and to_date ('30/11/2019','dd/mm/yyyy')
+ORDER BY unid_int.ds_unid_int ASC;
+
